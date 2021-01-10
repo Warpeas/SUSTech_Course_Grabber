@@ -10,8 +10,8 @@ data = {
     'geolocation': ''
 }
 
-# data['username'] = input('input SID: ')
-# data['password'] = input('input passwd: ')
+data['username'] = input('input SID: ')
+data['password'] = input('input passwd: ')
 
 try:
     r = s.get(
@@ -25,10 +25,16 @@ except:
     print("login failed")
     exit(0)
 
-file = open("lesson_list.json","r",encoding='utf-8')
+file = open("lesson_list.json", "r", encoding='utf-8')
+
 
 lesson_list = json.load(file)
-for select_headers in lesson_list:
-    r = s.post('https://tis.sustech.edu.cn/Xsxk/addGouwuche', select_headers)
-    select_return = r.json()
-    print(select_return['message'], select_return['jg'])
+for i in range(10):
+    for select_headers in lesson_list:
+        r = s.post('https://tis.sustech.edu.cn/Xsxk/addGouwuche', select_headers)
+        select_return = r.json()
+        print(select_return['message'], select_return['jg'])
+    if i == 9:
+        flag = input('continue? y/n: ')
+        if flag == 'y':
+            i = 0
