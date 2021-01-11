@@ -10,9 +10,9 @@
 
 ### 软件逻辑
 
-![基础版](D:\warpeas\projects\SUSech-LessonGrabber\README.assets\基础版-1610219225482.png)
+![基础版](基础版.png)
 
-![高级版](D:\warpeas\projects\SUSech-LessonGrabber\README.assets\高级版-1610219301306.png)
+![高级版](高级版.png)
 
 ### 课程分类编号 xkfsdm
 

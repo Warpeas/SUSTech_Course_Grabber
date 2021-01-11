@@ -24,13 +24,19 @@ r = s.post(
 file = open("lesson_list.json", "r", encoding='utf-8')
 
 lesson_list = json.load(file)
-for i in range(10):
+i = 0
+while True:
     print(time.time()-start)
     for select_headers in lesson_list:
-        r = s.post('https://tis.sustech.edu.cn/Xsxk/addGouwuche', select_headers)
+        r = s.post('https://tis.sustech.edu.cn/Xsxk/addGouwuche',
+                   select_headers)
         select_return = r.json()
         print(select_return['message'], select_return['jg'])
-    if i == 9:
+    time.sleep(5)
+    i += 1
+    if i == 10:
         flag = input('continue? y/n: ')
         if flag == 'y':
             i = 0
+        else:
+            exit(0)
