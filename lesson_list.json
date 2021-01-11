@@ -1,14 +1,10 @@
 [
     {
+        "p_pylx": 1,
         "p_xktjz": "rwtjzyx",
-        "p_gjz": "课程名称",
         "p_xn": "2020-2021",
         "p_xq": "2",
-        "p_xnxq": "2020-20212",
-        "p_dqxn": "2020-2021",
-        "p_dqxq": "2",
-        "p_dqxnxq": "2020-20212",
-        "p_xkfsdm": "bxxk",
+        "p_xkfsdm": "课程分类编号",
         "p_id": "课程id"
     }
 ]

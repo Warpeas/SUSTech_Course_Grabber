@@ -8,6 +8,24 @@
 
 暂无使用说明（本体尚未完成
 
+### 软件逻辑
+
+![基础版](D:\warpeas\projects\SUSech-LessonGrabber\README.assets\基础版-1610219225482.png)
+
+![高级版](D:\warpeas\projects\SUSech-LessonGrabber\README.assets\高级版-1610219301306.png)
+
+### 课程分类编号 xkfsdm
+
+通识必修课 bxxk
+
+通识选修课  xxxk
+
+培养方案内课程  kzyxk
+
+非培养方案内课程  zynknjxk
+
+重修选课  cxxk
+
 ## Progress
 
 目前项目处于基础阶段，因新系统抢课还未正式开放过，并未进行测试
