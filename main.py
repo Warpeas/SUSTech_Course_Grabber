@@ -4,7 +4,7 @@ import time
 import json
 
 s = requests.Session()
-
+start = time.time()
 data = {
     '_eventId': 'submit',
     'geolocation': ''
@@ -27,13 +27,14 @@ except:
 
 file = open("lesson_list.json", "r", encoding='utf-8')
 
-
 lesson_list = json.load(file)
 for i in range(10):
+    print(time.time()-start)
     for select_headers in lesson_list:
         r = s.post('https://tis.sustech.edu.cn/Xsxk/addGouwuche', select_headers)
         select_return = r.json()
         print(select_return['message'], select_return['jg'])
+    time.sleep(60)
     if i == 9:
         flag = input('continue? y/n: ')
         if flag == 'y':
