@@ -2,6 +2,7 @@ import requests
 import re
 import time
 import json
+import getpass
 
 s = requests.Session()
 start = time.time()
@@ -11,16 +12,15 @@ data = {
 }
 
 data['username'] = input('input SID: ')
-data['password'] = input('input passwd: ')
+data['password'] = getpass.getpass()
 
 r = s.get(
-    'https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2FcasLogin')
+    'https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2Fcas')
 # 记得写账号和密码
 data['execution'] = re.findall('on" value="(.+?)"', r.text)[0]
 # 进入教务系统
-r = s.post(
-    'https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2FcasLogin', data)
-
+r = s.post(url=
+    'https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2Fcas', data=data)
 file = open("lesson_list.json", "r", encoding='utf-8')
 
 lesson_list = json.load(file)
@@ -30,6 +30,7 @@ while True:
     for select_headers in lesson_list:
         r = s.post('https://tis.sustech.edu.cn/Xsxk/addGouwuche',
                    select_headers)
+        # print(r.text)
         select_return = r.json()
         print(select_return['message'], select_return['jg'])
     time.sleep(5)
