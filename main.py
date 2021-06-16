@@ -16,13 +16,13 @@ data['password'] = getpass.getpass()
 
 r = s.get(
     'https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2Fcas')
-# 记得写账号和密码
 data['execution'] = re.findall('on" value="(.+?)"', r.text)[0]
 # 进入教务系统
-r = s.post(url=
-    'https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2Fcas', data=data)
+r = s.post(url='https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2Fcas', data=data)
 file = open("lesson_list.json", "r", encoding='utf-8')
-
+r = s.get(
+    'https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2Fcas')
+print(re.findall('on" value="(.+?)"', r.text))
 lesson_list = json.load(file)
 i = 0
 while True:
@@ -33,7 +33,6 @@ while True:
         # print(r.text)
         select_return = r.json()
         print(select_return['message'], select_return['jg'])
-    time.sleep(5)
     i += 1
     if i == 10:
         flag = input('continue? y/n: ')
