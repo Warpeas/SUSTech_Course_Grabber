@@ -2,11 +2,34 @@
 
 ## Intro
 
-这是为后sustc新SUSTech选课系统开发的抢课脚本，用户可以根据想要选的课程对lesson_list.json进行修改，脚本自动运行并抢课
+这是为后 sustc 新 SUSTech 选课系统开发的 python 抢课脚本
+
+## Requirment
+
+python3
+
+prettytable
+
+requests
+
+re
+
+json
+
+pyDes
+
+可能还有其他要求，如有问题可以联系我
 
 ## Description
 
-暂无使用说明（本体尚未完成
+main.py 为基础版，course_search.py 可以搜索课程并构筑需要抢的课的列表，grabber_main.py 为手动抢课脚本，grabber_auto.py 为自动抢课脚本，后三者合起来使用为高级版功能，未来也许会把这几个合并？
+
+```bash
+python course_search.py
+python grabber_main.py
+```
+
+流程有明确提示，根据菜单输入指令即可完成抢课操作
 
 ### 软件逻辑
 
@@ -14,21 +37,9 @@
 
 ![高级版](高级版.png)
 
-### 课程分类编号 xkfsdm
-
-通识必修课 bxxk
-
-通识选修课  xxxk
-
-培养方案内课程  kzyxk
-
-非培养方案内课程  zynknjxk
-
-重修选课  cxxk
-
 ## Progress
 
-能抢到课，但还没办法挂后台自动，需要手动开启
+手动版本能抢到课，自动版本刚完成还没有抢成功过
 
 （不会吧，不会有人期待有人积分选课选上了还会退吧
 
@@ -36,5 +47,4 @@
 
 QQ: 820585042
 
-欢迎共同开发
-
+欢迎提 issue，不过因为后 sustc 时代积分选课，开发动力不足，欢迎 contribute

@@ -14,7 +14,8 @@ RUN = 1
 class form_data:
     def __init__(self):
         self.dict = {
-            'p_pylx': "1",
+            "p_pylx": "1",
+            "mxpylx:": "1",
             "p_sfgldjr": "0",
             "p_sfredis": "0",
             "p_sfsyxkgwc": "0",
@@ -46,24 +47,25 @@ class form_data:
         if month > 8 and month <= 12:
             xq = "1"
             xn = str(cYear)+"-"+str(cYear+1)
-        elif month >= 1 and month < 7:
+        elif month >= 1 and month < 6:
             xq = "2"
             xn = str(cYear-1) + "-" + str(cYear)
         else:
             xq = "3"
             xn = str(cYear-1) + "-" + str(cYear)
+        # 让用户自己决定学期？
         xnxq = xn+xq
         dqxn = xn
         dqxq = xq
         dqxnxq = xnxq
-        self.dict['xn'] = xn
-        self.dict['xq'] = xq
-        self.dict['xnxq'] = xnxq
-        self.dict['dqxn'] = dqxn
-        self.dict['dqxq'] = dqxq
-        self.dict['dqxnxq'] = dqxnxq
+        self.dict['p_xn'] = xn
+        self.dict['p_xq'] = xq
+        self.dict['p_xnxq'] = xnxq
+        self.dict['p_dqxn'] = dqxn
+        self.dict['p_dqxq'] = dqxq
+        self.dict['p_dqxnxq'] = dqxnxq
 
-    def search(self):
+    def construct_search_form(self):
         print("选择课程种类")
         print("通识必修 0")
         print("通识选修 1")
@@ -90,6 +92,7 @@ class form_data:
             self.search_course_ignore_conflict()
         else:
             self.search_course_no_ignore_conflict()
+        self.dict["pageNum"] = 1
 
     def search_course_name(self, name):
         self.dict['p_gjz'] = name
@@ -129,6 +132,12 @@ class form_data:
     def search_next_page(self):
         self.dict['pageNum'] += 1
 
+    def search_previous_page(self):
+        if self.dict['pageNum'] > 1:
+            self.dict['pageNum'] -= 1
+        else:
+            print("reached first page")
+
     def select_course_name(self, name):
         self.dict['p_gjz'] = name
 
@@ -147,6 +156,12 @@ class form_data:
     def select_course(self):
         self.dict['p_xktjz'] = 'rwtjzyx'
         # self.dict['p_pylx'] = 1
+
+    def current_pageNum(self):
+        return self.dict['pageNum']
+
+    def current_pageSize(self):
+        return self.dict['pageSize']
 
     @staticmethod
     def parse(course_data, course_type):
@@ -182,9 +197,13 @@ class grabber:
         return True
 
     def dump_course(self):
-        json.dump(obj=self.course_list, ensure_ascii=False,
-                  fp=open("lesson_list.json", "w"))
+        self.dump_json(self.course_list, "lesson_list.json")
 
+    def dump_json(self, json_list, file_name):
+        json.dump(obj=json_list, ensure_ascii=False,
+                  fp=open(file_name, "w"))
+
+    # 让当前Seesion进入登录状态
     def login(self):
         try:
             r = self.s.get(url=login_url, timeout=5)
@@ -207,27 +226,31 @@ class grabber:
             return False
         return True
 
+    # 传入搜索选项信息包，返回显示的课程字典列表
+    # 字典包括所有选课需要的信息
     def search(self, query_data):
-        print(query_data)
-        # r = self.s.get('https://tis.sustech.edu.cn/Xsxk/query/1')
+        # print(query_data)
         r = self.s.post(
             'https://tis.sustech.edu.cn/Xsxk/queryKxrw', query_data)
-        print(r.text)
-        query_json = r.json()
-        print(query_json)
-        js = json.dumps(query_json['yxkcList'],
-                        indent=4, separators=(',', ':'))
-        header = 'name teacher time'.split(' ')
+        response_json = r.json()
+        # print(query_json["kxrwList"])
+        # js = json.dumps(query_json['yxkcList'],
+        #                 indent=4, separators=(',', ':'))
+        header = 'index name teacher id'.split(' ')
         row = []
-        ids = []
-        for course in query_json["kxrwList"]["list"]:
-            row.append([course["rwmc"], course["dgjsmc"], course["pkjgmx"]])
-            ids.append(course["id"])
+        lessons = []
+        for idx, course in enumerate(response_json["kxrwList"]["list"]):
+            row.append([idx, course["rwmc"], course["dgjsmc"], course["id"]])
+            lessons.append({"课程名称": course["rwmc"], "p_pylx": 1, "p_xktjz": "rwtjzyx",
+                            "p_xn": query_data["p_xn"], "p_xq": query_data["p_xq"], "p_xkfsdm": query_data["p_xkfsdm"], "p_id": course["id"]})
         pt = PrettyTable()
-        pt._set_field_names(header)
-        pt.add_row(row=row)
+        pt.field_names = header
+        pt._rows = row
+        print(pt)
+        # pt.add_row(row=row)
 
-        print(js)
+        # print(js)
+        return response_json["kxrwList"]["total"], lessons
 
     def start_grab(self):
         self.lock.release()
@@ -256,18 +279,22 @@ def grab_thread(grabber: grabber):
 
         grabber.lock.acquire()
         for course in grabber.course_list:
-            print("正在尝试抢", course["课程名称"])
+            # print("正在尝试抢", course["课程名称"])
             try:
                 r = grabber.s.post(
                     'https://tis.sustech.edu.cn/Xsxk/addGouwuche', course)
             except:
                 continue
             else:
-                # TODO: Handle login time exceed
-                response = r.json()
-                print(response['message'], response['jg'])
-                if response['jg'] == "1":
-                    print("抢到", course["课程名称"])
-                    grabber.course_list.remove(course)
+                try:
+                    response = r.json()
+                    print(response['message'], response['jg'])
+                    if response['jg'] == "1":
+                        print("抢到", course["课程名称"])
+                        grabber.course_list.remove(course)
+                except:
+                    grabber.login()
+                    continue
+            time.sleep(0.05)
         grabber.lock.release()
-        time.sleep(1)
+        time.sleep(0.1)
