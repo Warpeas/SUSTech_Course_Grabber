@@ -47,15 +47,16 @@ search_form = form_data()
 control = ""
 while True:
     # 新搜索
-    search_form.construct_search_form()
+    search_form.new_search()
 
     while True:
         # 搜索请求
         total_num, lessons = grabber.search(search_form.dict)
-        print("previous page P --", search_form.current_pageNum(), "-- next page N")
+        print("previous page P --|",
+              search_form.current_pageNum(), "|-- next page N")
+        print("#"*40)
         print("add course to grabber list #idx")
-        print("new search S")
-        print("exit E")
+        print("new search S | exit E")
         control = input("input command: ").lower()
         if control.isdigit():
             lesson = lessons[int(control)]

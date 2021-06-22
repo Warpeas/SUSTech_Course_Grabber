@@ -8,7 +8,8 @@ from prettytable import PrettyTable
 login_url = "https://cas.sustech.edu.cn/cas/login?service=https%3A%2F%2Ftis.sustech.edu.cn%2Fcas"
 
 STOP = 0
-RUN = 1
+READY = 1
+RUN = 2
 
 
 class form_data:
@@ -65,7 +66,11 @@ class form_data:
         self.dict['p_dqxq'] = dqxq
         self.dict['p_dqxnxq'] = dqxnxq
 
-    def construct_search_form(self):
+    def construct_search_package(self):
+        self.search_course_type("bxxk")
+        self.search_course_ignore_conflict()
+
+    def new_search(self):
         print("选择课程种类")
         print("通识必修 0")
         print("通识选修 1")
@@ -85,7 +90,7 @@ class form_data:
             self.search_course_type("cxxk")
         else:
             self.search_course_type("bxxk")
-        name = input("课程名称: ")
+        name = input("课程名称（不限定留空即可）: ")
         self.search_course_name(name)
         ic = input("忽略冲突课程？y/n ")
         if ic == "y":
@@ -176,7 +181,7 @@ class form_data:
 class grabber:
     def __init__(self):
         self.s = requests.Session()
-        self.status = RUN
+        self.status = STOP
         self.course_list = []
 
     def account(self, username, password):
@@ -189,12 +194,16 @@ class grabber:
         if len(self.course_list) == 0:
             print("no course")
             return False
+        self.ready_grab()
+        return True
+
+    def ready_grab(self):
         self.lock = Lock()
         self.lock.acquire()
+        self.status = READY
         self.grab_thread = Thread(target=grab_thread, args=(self,))
         self.grab_thread.setDaemon(True)
         self.grab_thread.start()
-        return True
 
     def dump_course(self):
         self.dump_json(self.course_list, "lesson_list.json")
@@ -246,16 +255,31 @@ class grabber:
         pt = PrettyTable()
         pt.field_names = header
         pt._rows = row
+        print("#"*40)
+        print("### Search result for", query_data["p_xkfsdm"], "###")
         print(pt)
         # pt.add_row(row=row)
 
         # print(js)
         return response_json["kxrwList"]["total"], lessons
 
+    def print_course_list(self):
+        header = 'index name id'.split(' ')
+        pt = PrettyTable()
+        pt.field_names = header
+        for idx, course in enumerate(self.course_list):
+            pt.add_row([idx, course["课程名称"], course["p_id"]])
+        print(pt)
+
+    def is_end(self):
+        return self.status == STOP
+
     def start_grab(self):
+        self.status = RUN
         self.lock.release()
 
     def pause_grab(self):
+        self.status = READY
         self.lock.acquire()
 
     def stop_grab(self):
@@ -267,8 +291,9 @@ class grabber:
 
 
 def grab_thread(grabber: grabber):
-    while grabber.status == RUN:
+    while grabber.status != STOP:
         if len(grabber.course_list) == 0:
+            grabber.status == STOP
             return
 
         # try:
