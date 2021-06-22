@@ -3,11 +3,7 @@ import getpass
 import json
 import datetime
 import time
-
-# 加密功能
-# 将所有跟在 加密 后的注释取消以启用
-# 加密
-# from encrypt import *
+from encrypt import *
 
 grabber = grabber()
 
@@ -26,16 +22,10 @@ except:
             print("login failed")
     flag = input("Do you want to save password? y/n ")
     if flag == "y":
-        # 选择是否加密
         with open('user.info', 'w') as f:
-            print(username+"-"+password, file=f, end="")
-        # 加密
-        # with open('user.info', 'w') as f:
-        #     print(des_encrypt(username+"-"+password), file=f, end="")
+            print(des_encrypt(username+"-"+password), file=f, end="")
 else:
-    # 加密
-    # user_info = des_decrypt(f.read())
-    user_info = f.read()
+    user_info = des_decrypt(f.read())
     user_info = user_info.split("-")
     # print(user_info)
     username = user_info[0]
