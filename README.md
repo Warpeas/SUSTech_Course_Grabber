@@ -22,11 +22,10 @@ pyDes
 
 ## Description
 
-main.py 为基础版，course_search.py 可以搜索课程并构筑需要抢的课的列表，grabber_main.py 为手动抢课脚本，grabber_auto.py 为自动抢课脚本，后三者合起来使用为高级版功能，未来也许会把这几个合并？
+main.py 为基础版，course_search.py 可以搜索课程并构筑需要抢的课的列表，grabber_main.py 为手动抢课脚本，grabber_auto.py 可以实时搜索并调整课程列表并自动开始抢课
 
 ```bash
-python course_search.py
-python grabber_main.py
+python grabber_auto.py
 ```
 
 流程有明确提示，根据菜单输入指令即可完成抢课操作
