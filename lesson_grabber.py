@@ -189,7 +189,7 @@ class grabber:
         self.password = password
 
     def load_course(self):
-        file = open("lesson_list.json", "r")
+        file = open("lesson_list.json", "r", encoding='utf-8')
         self.course_list = json.load(file)
         if len(self.course_list) == 0:
             print("no course")
