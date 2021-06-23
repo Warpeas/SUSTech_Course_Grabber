@@ -98,14 +98,18 @@ while True:
         print("course list saved, exiting")
         exit(0)
     elif control == "g":
-        if grabber.is_end():
-            print("no course in list, grabber is stopped")
-        else:
-            while True:
+        while True:
+            if len(grabber.course_list) == 0:
+                print("no course in list, grabber is stopped")
+                break
+            else:
                 grabber.print_course_list()
                 control = input("do you want to remove course? #/n: ")
                 if control.isdigit() and int(control) < len(grabber.course_list):
-                    grabber.course_list.remove(int(control))
+                    grabber.course_list.remove(
+                        grabber.course_list[int(control)])
+                elif control.isdigit():
+                    print("invalid number")
                 else:
                     break
     else:

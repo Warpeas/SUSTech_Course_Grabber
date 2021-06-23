@@ -189,8 +189,11 @@ class grabber:
         self.password = password
 
     def load_course(self):
-        file = open("lesson_list.json", "r", encoding='utf-8')
-        self.course_list = json.load(file)
+        try:
+            file = open("lesson_list.json", "r", encoding='utf-8')
+            self.course_list = json.load(file)
+        except:
+            return False
         if len(self.course_list) == 0:
             print("no course")
             return False
@@ -210,7 +213,7 @@ class grabber:
 
     def dump_json(self, json_list, file_name):
         json.dump(obj=json_list, ensure_ascii=False,
-                  fp=open(file_name, "w"))
+                  fp=open(file_name, "w", encoding='utf-8'))
 
     # 让当前Seesion进入登录状态
     def login(self):
@@ -250,7 +253,7 @@ class grabber:
         lessons = []
         for idx, course in enumerate(response_json["kxrwList"]["list"]):
             row.append([idx, course["rwmc"], course["dgjsmc"], course["id"]])
-            lessons.append({"课程名称": course["rwmc"], "p_pylx": 1, "p_xktjz": "rwtjzyx",
+            lessons.append({"课程名称": str(course["rwmc"]), "p_pylx": 1, "p_xktjz": "rwtjzyx",
                             "p_xn": query_data["p_xn"], "p_xq": query_data["p_xq"], "p_xkfsdm": query_data["p_xkfsdm"], "p_id": course["id"]})
         pt = PrettyTable()
         pt.field_names = header
