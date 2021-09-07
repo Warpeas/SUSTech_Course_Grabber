@@ -323,6 +323,5 @@ def grab_thread(grabber: grabber):
                 except:
                     grabber.login()
                     continue
-            time.sleep(0.05)
         grabber.lock.release()
-        time.sleep(0.1)
+        time.sleep(0.01)

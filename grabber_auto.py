@@ -9,7 +9,7 @@ from threading import Thread
 
 def auto_control():
     start_time = datetime.time(12, 57, 0, 0)
-    end_time = datetime.time(13, 3, 0, 0)
+    end_time = datetime.time(13, 10, 0, 0)
     while not grabber.is_end():
         current_time = datetime.datetime.now().time()
         if current_time > start_time and current_time < end_time and grabber.status != RUN:
@@ -70,7 +70,15 @@ search_form.construct_search_package()
 
 while True:
     # 搜索请求
-    total_num, lessons = grabber.search(search_form.dict)
+    try:
+        total_num, lessons = grabber.search(search_form.dict)
+    except:
+        control = input("Search failed, retry? y/n ")
+        if control.lower() == "y":
+            grabber.login()
+            continue
+        else:
+            break
     print("previous page P --|",
           search_form.current_pageNum(), "|-- next page N")
     print("#"*40)
@@ -103,6 +111,10 @@ while True:
                 print("no course in list, grabber is stopped")
                 break
             else:
+                if grabber.is_end():
+                    print("the grabber is stopped")
+                else:
+                    print("the grabber is ready")
                 grabber.print_course_list()
                 control = input("do you want to remove course? #/n: ")
                 if control.isdigit() and int(control) < len(grabber.course_list):
