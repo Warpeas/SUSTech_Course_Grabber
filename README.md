@@ -6,17 +6,17 @@
 
 ## Requirment
 
-python3
-
-prettytable
-
-requests
-
-re
-
-json
-
-pyDes
+> python3
+>
+> prettytable
+>
+> requests
+>
+> re
+>
+> json
+>
+> pyDes
 
 可能还有其他要求，如有问题可以联系我
 
@@ -30,15 +30,7 @@ python grabber_auto.py
 
 流程有明确提示，根据菜单输入指令即可完成抢课操作
 
-### 软件逻辑
-
-![基础版](基础版.png)
-
-![高级版](高级版.png)
-
 ## Progress
-
-手动版本能抢到课，自动版本刚完成还没有抢成功过
 
 （不会吧，不会有人期待有人积分选课选上了还会退吧
 
