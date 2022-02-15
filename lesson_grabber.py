@@ -1,3 +1,4 @@
+from email import message
 import requests
 import re
 import json
@@ -12,7 +13,7 @@ READY = 1
 RUN = 2
 
 
-class form_data:
+class Form_data:
     def __init__(self):
         self.dict = {
             "p_pylx": "1",
@@ -170,7 +171,7 @@ class form_data:
 
     @staticmethod
     def parse(course_data, course_type):
-        course = form_data()
+        course = Form_data()
         course.select_course()
         course.select_course_name(course_data['rwmc'])
         course.select_course_id(course_data['id'])
@@ -178,11 +179,12 @@ class form_data:
         return course
 
 
-class grabber:
+class Grabber:
     def __init__(self):
         self.s = requests.Session()
         self.status = STOP
         self.course_list = []
+        self.results = {}
 
     def account(self, username, password):
         self.username = username
@@ -278,12 +280,17 @@ class grabber:
         return self.status == STOP
 
     def start_grab(self):
+        self.results = {}
         self.status = RUN
         self.lock.release()
 
     def pause_grab(self):
         self.status = READY
         self.lock.acquire()
+        print('*'*10)
+        print("今日抢课结果：")
+        for key, value in self.results.items():
+            print(key, value['message'])
 
     def stop_grab(self):
         self.status = STOP
@@ -291,9 +298,16 @@ class grabber:
             self.lock.release()
         except:
             return
+        self.dump_course()
+        print("course list saved, exiting")
+
+    def update_results(self, course, message, code):
+        if course in self.results and (self.results[course]['code'] == 1 or self.results[course]['code'] == code):
+            return
+        self.results[course] = {'message': message, 'code': code}
 
 
-def grab_thread(grabber: grabber):
+def grab_thread(grabber: Grabber):
     while grabber.status != STOP:
         if len(grabber.course_list) == 0:
             grabber.status == STOP
@@ -316,10 +330,12 @@ def grab_thread(grabber: grabber):
             else:
                 try:
                     response = r.json()
-                    print(response['message'], response['jg'])
-                    if response['jg'] == "1":
-                        print("抢到", course["课程名称"])
-                        grabber.course_list.remove(course)
+                    # grabber.results.append(response['message'])
+                    # print(response['message'], response['jg'])
+                    grabber.update_results(course['课程名称'], response['message'], response['jg'])
+                    # if response['jg'] == "1":
+                    #     print("抢到", course["课程名称"])
+                    #     grabber.course_list.remove(course)
                 except:
                     grabber.login()
                     continue

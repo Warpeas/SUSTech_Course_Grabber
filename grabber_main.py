@@ -1,9 +1,9 @@
-from lesson_grabber import form_data, grabber
+from lesson_grabber import Form_data, Grabber
 import getpass
 import json
 from encrypt import *
 
-grabber = grabber()
+grabber = Grabber()
 
 try:
     f = open('user.info', 'r')

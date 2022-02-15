@@ -1,4 +1,4 @@
-from lesson_grabber import form_data, grabber, STOP, RUN, READY
+from lesson_grabber import Form_data, Grabber, STOP, RUN, READY
 import getpass
 import json
 import datetime
@@ -7,9 +7,9 @@ from encrypt import *
 from threading import Thread
 
 
-def auto_control():
-    start_time = datetime.time(12, 57, 0, 0)
-    end_time = datetime.time(13, 10, 0, 0)
+def auto_control(grabber):
+    start_time = datetime.time(12, 58, 0, 0)
+    end_time = datetime.time(13, 2, 0, 0)
     while not grabber.is_end():
         current_time = datetime.datetime.now().time()
         if current_time > start_time and current_time < end_time and grabber.status != RUN:
@@ -21,7 +21,7 @@ def auto_control():
             time.sleep(60)
 
 
-grabber = grabber()
+grabber = Grabber()
 
 try:
     f = open('user.info', 'r')
@@ -59,12 +59,12 @@ if grabber.load_course():
 else:
     print("no course in list, please start search")
 
-auto_controller = Thread(target=auto_control)
+auto_controller = Thread(target=auto_control, args=(grabber,))
 auto_controller.setDaemon(True)
 auto_controller.start()
 
 # 首先构筑搜索信息包
-search_form = form_data()
+search_form = Form_data()
 control = ""
 search_form.construct_search_package()
 
@@ -78,6 +78,7 @@ while True:
             grabber.login()
             continue
         else:
+            grabber.stop_grab()
             break
     print("previous page P --|",
           search_form.current_pageNum(), "|-- next page N")
@@ -102,8 +103,7 @@ while True:
     elif control == "p":
         search_form.search_previous_page()
     elif control == "e":
-        grabber.dump_course()
-        print("course list saved, exiting")
+        grabber.stop_grab()
         exit(0)
     elif control == "g":
         while True:

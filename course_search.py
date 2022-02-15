@@ -1,10 +1,10 @@
-from lesson_grabber import form_data, grabber
+from lesson_grabber import Form_data, Grabber
 import getpass
 import json
 from encrypt import *
 import time
 
-grabber = grabber()
+grabber = Grabber()
 
 try:
     f = open('user.info', 'r')
@@ -43,7 +43,7 @@ else:
     exit()
 
 # 首先构筑搜索信息包
-search_form = form_data()
+search_form = Form_data()
 control = ""
 while True:
     # 新搜索
